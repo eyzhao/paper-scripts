@@ -1,6 +1,34 @@
 #!/usr/bin/env python
 
-'''
+''' pandoc-acronym.py
+
+A Pandoc filter that introduces acronym handling.
+
+Usage: pandoc -o <output> --filter=path/to/pandoc-acronym.py <input>
+
+In the <input> document, use the syntax [+KEY]. In a separate <acronyms> file
+write
+
+KEY = FULL_VALUE
+
+with one acronym per line.
+
+When running pandoc-acronym.py filter, the first instance of [+KEY] will be replaced
+automatically with FULL_VALUE (KEY). All subsequent instances will, by default,
+be replaced with KEY automatically.
+
+The general form of the in-text statement is [+KEY:<suffix>:<option>].
+- <suffix> can take on any value.
+- <option> can take on values "short", "full", or "both" (without the quotes).
+
+If you want to add a suffix (i.e. to pluralize an acronym), add the suffix after a colon,
+as follows: [+KEY:s]. This will be replaced with either FULL_VALUEs (KEYs) or with KEYs
+depending on the previously stated pattern.
+
+If you want to force a value to write out in full, use [+KEY:<suffix>:full]. This writes
+FULL_VALUE<suffix>. If you want to force a restatement of the acronym, use [+KEY:<suffix>:both],
+which writes FULL_VALUE<suffix> (KEY<suffix>). To force usage of the acronym, use
+[+KEY:<suffix>:short].
 '''
 
 from pandocfilters import *
