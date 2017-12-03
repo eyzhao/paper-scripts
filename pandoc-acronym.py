@@ -7,7 +7,7 @@ from pandocfilters import *
 
 used_acronyms = set()
 
-def get_value(acronym, option, acronym_dictionary):
+def get_value(acronym, suffix, option, acronym_dictionary):
     # option may be either 'short' or 'full' or 'both'
     if not option in ('short', 'both', 'full'):
         option = 'short'
@@ -17,11 +17,11 @@ def get_value(acronym, option, acronym_dictionary):
         (key, value) = [x.strip() for x in line.split('=')]
         if key == acronym:
             if option == 'full':
-                return value
+                return value + suffix
             elif option == 'both':
-                return '{0} ({1})'.format(value, key)
+                return '{0}{2} ({1}{2})'.format(value, key, suffix)
             else:
-                return key
+                return key + suffix
 
     raise AcronymError('No value exists for acronym: {0}'.format(acronym))
 
@@ -49,11 +49,12 @@ def test(key, value, format, meta):
             else:
                 acronym_type = 'both'
 
-            option = acronym_code[1].strip() if len(acronym_code) == 2 else acronym_type
+            suffix = acronym_code[1].strip() if len(acronym_code) >= 2 else ''
+            option = acronym_code[2].strip() if len(acronym_code) >= 3 else acronym_type
 
             used_acronyms.add(acronym)
 
-            acronym_output = get_value(acronym, option, meta['acronyms']['c'][0]['c'])
+            acronym_output = get_value(acronym, suffix, option, meta['acronyms']['c'][0]['c'])
 
             try:
                 return_string = acronym_content.replace('[+' + acronym_value + ']', acronym_output)
