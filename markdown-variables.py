@@ -11,16 +11,17 @@ Options:
 '''
 
 from docopt import docopt
+import yaml
 
 args = docopt(__doc__)
 
 input_file = open(args['--input']).read()
-variables_file = open(args['--variables'])
 
-variables = {line.split('=')[0].strip() : line.split('=')[1].strip() for line in variables_file
-             if '=' in line and not line.startswith('#')}
+variables = yaml.load(open(args['--variables']))
 
 for key, value in variables.items():
+    key = str(key)
+    value = str(value)
     if key.strip():
         if args['--boldface']:
             value = '**' + value.strip() + '**'
