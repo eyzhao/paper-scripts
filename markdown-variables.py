@@ -12,6 +12,8 @@ Options:
 
 from docopt import docopt
 import yaml
+import re
+import warnings
 
 args = docopt(__doc__)
 
@@ -27,5 +29,10 @@ for key, value in variables.items():
             value = '**' + value.strip() + '**'
         input_file = input_file.replace('{@var:' + key.strip() + '}', value.strip())
 
+var_re = re.compile(r'{@var:.*?}')
+remaining_variables = set(m.replace('{@var:', '').replace('}', '') for m in var_re.findall(input_file))
+
+for variable in remaining_variables:
+    warnings.warn('Unmatched variable: {}'.format(variable))
 
 print(input_file)
