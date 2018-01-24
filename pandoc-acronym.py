@@ -17,9 +17,10 @@ When running pandoc-acronym.py filter, the first instance of [+KEY] will be repl
 automatically with FULL_VALUE (KEY). All subsequent instances will, by default,
 be replaced with KEY automatically.
 
-The general form of the in-text statement is [+KEY:<suffix>:<option>].
+The general form of the in-text statement is [+KEY:<suffix>:<option>:<capitalization>].
 - <suffix> can take on any value.
 - <option> can take on values "short", "full", or "both" (without the quotes).
+- <capitalization> can take on values "upperstart" or "lower"
 
 If you want to add a suffix (i.e. to pluralize an acronym), add the suffix after a colon,
 as follows: [+KEY:s]. This will be replaced with either FULL_VALUEs (KEYs) or with KEYs
@@ -35,21 +36,32 @@ from pandocfilters import *
 
 used_acronyms = set()
 
-def get_value(acronym, suffix, option, acronym_dictionary):
+def get_value(acronym, suffix, capitalization, option, acronym_dictionary):
     # option may be either 'short' or 'full' or 'both'
     if not option in ('short', 'both', 'full'):
         option = 'short'
 
+    if not capitalization in ('upperstart', 'lower', 'default'):
+        capitalization = 'default'
+
     d = open(acronym_dictionary)
     for line in d:
         (key, value) = [x.strip() for x in line.split('=')]
+
         if key == acronym:
+            if capitalization == 'lower':
+                value = value.lower()
+            elif capitalization == 'upperstart':
+                value = value[0].upper() + value[1:]
+
             if option == 'full':
-                return value + suffix
+                out = value + suffix
             elif option == 'both':
-                return '{0}{2} ({1}{2})'.format(value, key, suffix)
+                out = '{0}{2} ({1}{2})'.format(value, key, suffix)
             else:
-                return key + suffix
+                out = key + suffix
+
+            return out
 
     raise AcronymError('No value exists for acronym: {0}'.format(acronym))
 
@@ -78,11 +90,12 @@ def test(key, value, format, meta):
                 acronym_type = 'both'
 
             suffix = acronym_code[1].strip() if len(acronym_code) >= 2 else ''
-            option = acronym_code[2].strip() if len(acronym_code) >= 3 else acronym_type
+            capitalization = acronym_code[2].strip() if len(acronym_code) >= 3 else ''
+            option = acronym_code[3].strip() if len(acronym_code) >= 4 else acronym_type
 
             used_acronyms.add(acronym)
 
-            acronym_output = get_value(acronym, suffix, option, meta['acronyms']['c'][0]['c'])
+            acronym_output = get_value(acronym, suffix, capitalization, option, meta['acronyms']['c'][0]['c'])
 
             try:
                 return_string = acronym_content.replace('[+' + acronym_value + ']', acronym_output)
