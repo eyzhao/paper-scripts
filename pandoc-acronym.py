@@ -17,10 +17,10 @@ When running pandoc-acronym.py filter, the first instance of [+KEY] will be repl
 automatically with FULL_VALUE (KEY). All subsequent instances will, by default,
 be replaced with KEY automatically.
 
-The general form of the in-text statement is [+KEY:<suffix>:<option>:<capitalization>].
+The general form of the in-text statement is [+KEY:<suffix>:<capitalization>:<option>].
 - <suffix> can take on any value.
-- <option> can take on values "short", "full", or "both" (without the quotes).
 - <capitalization> can take on values "upperstart" or "lower"
+- <option> can take on values "short", "full", or "both" (without the quotes).
 
 If you want to add a suffix (i.e. to pluralize an acronym), add the suffix after a colon,
 as follows: [+KEY:s]. This will be replaced with either FULL_VALUEs (KEYs) or with KEYs
