@@ -10,6 +10,8 @@ import warnings
 import panflute as pf
 import sys
 
+match_key = re.compile(r'\{\?var:(.*?)\}')
+
 def prepare(doc):
     doc.variables = yaml.load(open(doc.get_metadata('variables', default='variables.yml')))
     doc.boldface_variables = doc.get_metadata('boldface_variables', default=False)
@@ -19,8 +21,8 @@ def prepare(doc):
 
 def action(elem, doc):
     if type(elem) == pf.Str:
-        if elem.text.startswith('{?var:'):
-            var_key = elem.text.replace('{?var:', '').replace('}', '').strip()
+        if len(match_key.findall(elem.text)) > 0:
+            var_key = match_key.findall(elem.text)[0]
 
             if var_key in doc.variables:
                 if doc.boldface_variables:

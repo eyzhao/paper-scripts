@@ -12,7 +12,7 @@ def is_title_line(elem):
         return False
     elif not all (isinstance(x, (pf.Str, pf.Space)) for x in elem.content):
         return False
-    elif elem.content[0].text != '$chapter':
+    elif not (elem.content[0].text == '$chapter' or elem.content[0].text == '$unnumbered'):
         return False
     elif type(elem.content[1]) != pf.Space:
         return False
@@ -25,7 +25,10 @@ def get_title_name(elem):
 def action(elem, doc):
     if isinstance(elem, pf.Para) and is_title_line(elem):
         title = get_title_name(elem)
-        return pf.Header(pf.Str(title))
+        chapter_elem = pf.Header(pf.Str(title))
+        if elem.content[0].text == '$unnumbered':
+            chapter_elem.classes = ['unnumbered']
+        return chapter_elem
     elif type(elem) == pf.Header:
         elem.level += 1
 
