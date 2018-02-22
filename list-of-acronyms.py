@@ -34,6 +34,6 @@ for line in acronyms_file:
 
 output = ''
 for key,value in acronyms.items():
-    output += '- **{}:** {}\n'.format(key, value)
+    output += r'\nomenclature{' + key + '}{' + value + '}\n'
 
 print(output)

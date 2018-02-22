@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
 Panflute filter to allow file includes
 
