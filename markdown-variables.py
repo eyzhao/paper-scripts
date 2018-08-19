@@ -21,18 +21,19 @@ input_file = open(args['--input']).read()
 
 variables = yaml.load(open(args['--variables']))
 
-for key, value in variables.items():
-    key = str(key)
-    value = str(value)
-    if key.strip():
-        if args['--boldface']:
-            value = '**' + value.strip() + '**'
-        input_file = input_file.replace('{@var:' + key.strip() + '}', value.strip())
+if variables is not None:
+    for key, value in variables.items():
+        key = str(key)
+        value = str(value)
+        if key.strip():
+            if args['--boldface']:
+                value = '**' + value.strip() + '**'
+            input_file = input_file.replace('{@var:' + key.strip() + '}', value.strip())
 
-var_re = re.compile(r'{@var:.*?}')
-remaining_variables = set(m.replace('{@var:', '').replace('}', '') for m in var_re.findall(input_file))
+    var_re = re.compile(r'{@var:.*?}')
+    remaining_variables = set(m.replace('{@var:', '').replace('}', '') for m in var_re.findall(input_file))
 
-for variable in remaining_variables:
-    warnings.warn('Unmatched variable: {}'.format(variable))
+    for variable in remaining_variables:
+        warnings.warn('Unmatched variable: {}'.format(variable))
 
 print(input_file)
