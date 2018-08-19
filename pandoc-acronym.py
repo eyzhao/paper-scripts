@@ -36,6 +36,14 @@ from pandocfilters import *
 
 used_acronyms = set()
 
+def debug(*args, **kwargs):
+    """
+    Same as print, but prints to ``stderr``
+    (which is not intercepted by Pandoc).
+    """
+    print(file=sys.stderr, *args, **kwargs)
+
+
 def get_value(acronym, suffix, capitalization, option, acronym_dictionary):
     # option may be either 'short' or 'full' or 'both'
     if not option in ('short', 'both', 'full'):
@@ -68,7 +76,7 @@ def get_value(acronym, suffix, capitalization, option, acronym_dictionary):
 def test(key, value, format, meta):
     global used_acronyms
 
-    if key == 'Para':
+    if key == 'Para' or key == 'Strikeout':
         acronym_indices = [
                 i for i in range(0, len(value))
                 if value[i]['t'] == 'Str'
@@ -103,7 +111,10 @@ def test(key, value, format, meta):
             except:
                 raise AcronymError('Acronym parsing failed for acronym: {0}. Acronym value was {1}. Acronym output was {2}.'.format(acronym_content, acronym_value, acronym_output))
 
-        return(Para(value))
+        if key == 'Para':
+            return(Para(value))
+        elif key == 'Strikeout':
+            return(Strikeout(value))
 
 class AcronymError(Exception):
     pass
