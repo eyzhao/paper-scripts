@@ -19,22 +19,23 @@ variables = yaml.load(open(args['--var']))
 
 output = '# Supplemental Figures\n\n'
 
-for i, figure in enumerate(data['figures']):
-    figure_id = list(figure.keys())[0]
-    figure_data = list(figure.values())[0]
+if data['figures'] is not None:
+    for i, figure in enumerate(data['figures']):
+        figure_id = list(figure.keys())[0]
+        figure_data = list(figure.values())[0]
 
-    title = figure_data['title'].strip()[:-1] \
-        if figure_data['title'].strip().endswith('.') \
-        else figure_data['title']
+        title = figure_data['title'].strip()[:-1] \
+            if figure_data['title'].strip().endswith('.') \
+            else figure_data['title']
 
-    output += '![]({src})\n\n> **Supplementary Figure {index}. {title}.** {caption}\n\n\clearpage\n\n'.format(
-        index = str(i + 1),
-        title = title,
-        caption = figure_data['caption'],
-        src = figure_data['src']
-    )
+        output += '![]({src})\n\n> **Supplementary Figure {index}. {title}.** {caption}\n\n\clearpage\n\n'.format(
+            index = str(i + 1),
+            title = title,
+            caption = figure_data['caption'],
+            src = figure_data['src']
+        )
 
-    variables['fig-' + str(figure_id) + '-idx'] = i + 1
+        variables['fig-' + str(figure_id) + '-idx'] = i + 1
 
 with open(args['--output'], 'w') as outfile:
     outfile.write(output)
